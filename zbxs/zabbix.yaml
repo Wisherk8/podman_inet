@@ -1,0 +1,13 @@
+- hosts: 185.159.130.196
+  tasks:
+  - name: Run container zabbix database
+    containers.podman.podman_container:
+      name: zabbix-db
+      pod: zabbix-server-pod
+      image: docker.io/mysql
+      state: started
+      env:
+        MYSQL_DATABASE: "zabbix"
+        MYSQL_USER: "zabbix"
+        MYSQL_PASSWORD: "zabbix_pwd"
+        MYSQL_ROOT_PASSWORD: "root_pwd"
