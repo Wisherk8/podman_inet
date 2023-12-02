@@ -4,10 +4,35 @@
     containers.podman.podman_container:
       name: zabbix-db
       pod: zabbix-server-pod
-      image: docker.io/mysql
+      image: docker.io/mysql:8.0
       state: started
       env:
         MYSQL_DATABASE: "zabbix"
         MYSQL_USER: "zabbix"
         MYSQL_PASSWORD: "zabbix_pwd"
+        MYSQL_ROOT_PASSWORD: "root_pwd"
+  - name: Run container zabbix server
+    containers.podman.podman_container:
+      name: zabbix-server
+      pod: zabbix-server-pod
+      image: docker.io/zabbix/zabbix-server-mysql
+      state: started
+      env:
+        MYSQL_DATABASE: "zabbix"
+        MYSQL_USER: "zabbix"
+        MYSQL_PASSWORD: "zabbix_pwd"
+        DB_SERVER_HOST: "127.0.0.1"
+        MYSQL_ROOT_PASSWORD: "root_pwd"
+  - name: Run container zabbix web interface
+    containers.podman.podman_container:
+      name: zabbix-web
+      pod: zabbix-server-pod
+      image: docker.io/zabbix/zabbix-web-nginx-mysql:alpine-6.4-latest
+      state: started
+      env:
+        ZBX_SERVER_HOST: "zabbix-server-mysql"
+        MYSQL_DATABASE: "zabbix"
+        MYSQL_USER: "zabbix"
+        MYSQL_PASSWORD: "zabbix_pwd"
+        DB_SERVER_HOST: "127.0.0.1"
         MYSQL_ROOT_PASSWORD: "root_pwd"
