@@ -1,0 +1,38 @@
+- hosts: 185.159.130.196
+  tasks:
+  - name: Run container zabbix database
+    containers.podman.podman_container:
+      name: zabbix7-db
+      pod: zabbix-server7-pod
+      image: docker.io/mysql:8.0
+      state: absent
+      env:
+        MYSQL_DATABASE: "zabbix"
+        MYSQL_USER: "zabbix"
+        MYSQL_PASSWORD: "zabbix_pwd"
+        MYSQL_ROOT_PASSWORD: "root_pwd"
+  - name: Run container zabbix server
+    containers.podman.podman_container:
+      name: zabbix7-server
+      pod: zabbix-server7-pod
+      image: docker.io/zabbix/zabbix-server-mysql:ubuntu-trunk
+      state: absent
+      env:
+        MYSQL_DATABASE: "zabbix"
+        MYSQL_USER: "zabbix"
+        MYSQL_PASSWORD: "zabbix_pwd"
+        DB_SERVER_HOST: "127.0.0.1"
+        MYSQL_ROOT_PASSWORD: "root_pwd"
+  - name: Run container zabbix web interface
+    containers.podman.podman_container:
+      name: zabbix7-web
+      pod: zabbix-server7-pod
+      image: docker.io/zabbix/zabbix-web-nginx-mysql:ubuntu-trunk
+      state: absent
+      env:
+        ZBX_SERVER_HOST: "zabbix-server-mysql"
+        MYSQL_DATABASE: "zabbix"
+        MYSQL_USER: "zabbix"
+        MYSQL_PASSWORD: "zabbix_pwd"
+        DB_SERVER_HOST: "127.0.0.1"
+        MYSQL_ROOT_PASSWORD: "root_pwd"
